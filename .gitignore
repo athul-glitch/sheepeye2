@@ -1,0 +1,12 @@
+node_modules/
+.next/
+.vercel/
+out/
+build/
+
+/.idea
+
+.vercel
+.env*
+
+/src/generated/prisma
