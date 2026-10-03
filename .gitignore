@@ -10,3 +10,9 @@ build/
 .env*
 
 /src/generated/prisma
+# Terraform
+.terraform/
+*.tfstate
+*.tfstate.*
+*.tfvars
+*.tfvars.json
