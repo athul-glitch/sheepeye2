@@ -1,213 +1,230 @@
-# Sheepeye — Car Wash Booking Platform
+# Sheepeye2 — AWS Cloud Infrastructure Portfolio
 
-A modern car wash booking website built with **Next.js, React, and Tailwind CSS**, with AWS infrastructure and cloud services used for deployment and application operations.
+A hands-on cloud infrastructure project demonstrating how to design, provision, and manage AWS infrastructure using Terraform.
 
-## Project Overview
+Sheepeye2 is a separate cloud portfolio project inspired by the Sheepeye car wash booking application. Its primary focus is **AWS infrastructure, Infrastructure as Code (IaC), cloud networking, Linux administration, monitoring, and automation**.
 
-**Sheepeye** is a car wash booking platform created for a real-world car wash business.
+The goal is to build a reproducible AWS environment while understanding the purpose of each resource, its security implications, and its operational costs.
 
-The project is also used as a practical **AWS Cloud and Infrastructure portfolio project**, demonstrating application deployment, cloud networking, infrastructure as code, and AWS service integration.
+## Project Goals
 
-## Tech Stack
+* Provision AWS infrastructure using Terraform.
+* Design a VPC with public and private subnets.
+* Understand routing, Internet Gateways, and security groups.
+* Deploy a web application on Amazon EC2.
+* Configure Amazon RDS for PostgreSQL.
+* Implement monitoring and email notifications.
+* Apply IAM security best practices.
+* Document infrastructure decisions, deployment procedures, and troubleshooting.
+
+## Technology Stack
+
+### Cloud Platform
+
+* Amazon Web Services (AWS)
+* Amazon VPC
+* Amazon EC2
+* Amazon RDS for PostgreSQL
+* AWS IAM
+* Amazon SNS
+* Amazon CloudWatch
+* Amazon Route 53
+
+### Infrastructure as Code
+
+* Terraform
+* HashiCorp Configuration Language (HCL)
+
+### Operating System and Tools
+
+* Linux
+* Ubuntu on WSL
+* AWS CLI
+* Git
+* GitHub
+* Visual Studio Code
 
 ### Application
 
 * Next.js
 * React
 * TypeScript
-* Tailwind CSS
 * Node.js
-
-### Database
-
-* PostgreSQL
-* Neon
-
-### AWS
-
-* Amazon EC2
-* Amazon VPC
-* Amazon S3
-* Amazon SNS
-* Amazon Route 53
-* Amazon CloudWatch
-
-### Infrastructure as Code
-
-* Terraform
-
-### Tools
-
-* Git
-* GitHub
-* Linux
-* PM2
 
 ## Architecture
 
+The target architecture is being developed incrementally.
+
 ```text
-                    Internet
-                       |
-                       v
-                Route 53 / DNS
-                       |
-                       v
-                  Amazon EC2
-                       |
-                 Next.js App
-                       |
-              +--------+--------+
-              |                 |
-              v                 v
-        Neon PostgreSQL    Amazon SNS
-          Database         Notifications
+                         Internet
+                            |
+                            v
+                    Internet Gateway
+                            |
+                            v
+                       Public Subnet
+                            |
+                            v
+                        Amazon EC2
+                            |
+                            v
+                     Web Application
+                            |
+                            v
+                   Private Database Access
+                            |
+                            v
+                  Amazon RDS PostgreSQL
+
+
+       Amazon CloudWatch ----> Amazon SNS
+                                      |
+                                      v
+                              Email Notifications
+
+           Terraform manages AWS infrastructure
 ```
 
-The application runs on an Amazon EC2 instance, while DNS, notifications, monitoring, and infrastructure are managed using AWS services.
+The final architecture will depend on the infrastructure configuration and security requirements.
 
-## AWS Infrastructure
+Private database access will be restricted to authorized application resources rather than exposing PostgreSQL directly to the internet.
 
-The project includes AWS infrastructure such as:
+## Terraform Infrastructure
 
-* Custom VPC
-* Public subnet
-* Internet Gateway
-* Route tables
-* EC2 instance
-* Security Groups
-* IAM
-* SNS notifications
-* Route 53 DNS
-* CloudWatch monitoring
+Terraform is used to define AWS resources as code.
 
-Terraform is used to define and manage infrastructure as code.
-
-## Terraform
-
-The Terraform configuration is being developed separately from the application code.
-
-Example structure:
+Current Terraform configuration files include:
 
 ```text
-Terraform/
+terraform/
 ├── provider.tf
 ├── vpc.tf
 ├── subnet.tf
-├── variables.tf
-├── outputs.tf
-└── README.md
+├── internet_gateway.tf
+├── route_table.tf
+├── security_group.tf
+├── ec2.tf
+├── iam.tf
+├── instance_profile.tf
+├── rds.tf
+└── .terraform.lock.hcl
 ```
 
-The infrastructure is designed to be reproducible instead of relying entirely on manual AWS console configuration.
+The configuration is being developed and validated incrementally.
 
-## Application Deployment
+### Infrastructure Components
 
-The application is deployed on Amazon EC2 running Amazon Linux.
+| Component        | Purpose                                                                                 |
+| ---------------- | --------------------------------------------------------------------------------------- |
+| VPC              | Provides an isolated virtual network                                                    |
+| Public subnets   | Host resources that require appropriate internet connectivity                           |
+| Private subnets  | Provide network placement for resources that should not be directly internet-accessible |
+| Internet Gateway | Enables internet connectivity for appropriately routed public resources                 |
+| Route tables     | Control network traffic paths                                                           |
+| Security groups  | Control inbound and outbound resource traffic                                           |
+| EC2              | Provides compute capacity for the web application                                       |
+| IAM              | Defines permissions for AWS resource access                                             |
+| RDS PostgreSQL   | Provides managed relational database storage                                            |
+| SNS              | Delivers notifications to subscribed endpoints                                          |
+| CloudWatch       | Collects metrics and supports monitoring and alarms                                     |
 
-PM2 is used to keep the Node.js application running:
+**Note:** A Terraform configuration file does not prove that its resources have been deployed successfully. Actual deployment status and implemented features will be documented as they are verified.
 
-```bash
-pm2 start
-pm2 status
-pm2 restart
-pm2 logs
-```
+## Security Considerations
 
-The application runs on:
+Security is an important part of this project.
 
-```text
-http://localhost:3000
-```
+* Restrict SSH access instead of allowing unrestricted access from the internet.
+* Use IAM roles instead of hardcoding AWS credentials.
+* Keep database resources private wherever possible.
+* Avoid committing secrets, credentials, and Terraform state files to GitHub.
+* Apply least-privilege permissions.
+* Review Terraform plans before making infrastructure changes.
 
-when accessed locally on the EC2 server.
+## Monitoring and Notifications
 
-## Notifications
+Planned monitoring improvements include:
 
-Amazon SNS is used for booking-related notifications.
+* Amazon CloudWatch metrics and alarms.
+* Monitoring EC2 instance health and resource utilization.
+* Amazon SNS email notifications.
+* Investigation of application and infrastructure issues.
+* Controlled load testing after monitoring is configured.
 
-Example flow:
+Load testing will only be performed after the infrastructure, monitoring, and cost controls are ready.
 
-```text
-Customer
-   |
-   v
-Booking Form
-   |
-   v
-Next.js Application
-   |
-   v
-PostgreSQL Database
-   |
-   v
-Amazon SNS
-   |
-   v
-Notification
-```
+## Cost Management
 
-## Database
+AWS resources can incur charges even when a project is used only for learning.
 
-The application uses PostgreSQL for storing booking information.
+Cost management will include:
 
-The current project uses **Neon PostgreSQL** as the database service.
+* Reviewing Terraform plans before deployment.
+* Avoiding unnecessary always-on resources.
+* Evaluating the cost of networking and database services.
+* Cleaning up resources when they are no longer required.
+* Avoiding unnecessary NAT Gateways, load balancers, and other paid components during early development.
 
-## Repository Structure
+Resources will be deployed only when required for the current learning objective.
 
-```text
-sheepeye2/
-├── src/
-├── public/
-├── Terraform/
-├── package.json
-├── next.config.*
-├── tailwind.config.*
-└── README.md
-```
+## Development Roadmap
 
-## Future Infrastructure Improvements
+* [x] Create the GitHub repository.
+* [x] Organize the initial Terraform configuration.
+* [x] Define the initial VPC and subnet configuration.
+* [x] Initialize and validate the Terraform configuration.
+* [ ] Complete and review VPC networking.
+* [ ] Review and improve security group rules.
+* [ ] Review IAM permissions.
+* [ ] Deploy and configure EC2 when cost and access requirements permit.
+* [ ] Deploy the web application.
+* [ ] Configure Amazon RDS PostgreSQL.
+* [ ] Configure Amazon SNS notifications.
+* [ ] Configure CloudWatch monitoring and alarms.
+* [ ] Perform controlled load testing.
+* [ ] Document the architecture and operational procedures.
 
-Planned improvements include:
+Checklist items will be updated as each stage is completed and verified.
 
-* Application Load Balancer
-* Auto Scaling Group
-* CloudFront
-* HTTPS with ACM
-* Private subnets
-* NAT Gateway
-* RDS evaluation
-* CloudWatch dashboards and alarms
-* Improved IAM least-privilege policies
-* CI/CD with GitHub Actions
+## Future Improvements
 
-These components will be added gradually while keeping AWS costs under control.
+Potential improvements include:
 
-## Learning Objectives
+* Application Load Balancer (ALB).
+* Auto Scaling Groups.
+* Amazon CloudFront.
+* HTTPS using AWS Certificate Manager.
+* Additional automation with GitHub Actions.
+* Improved deployment and operational documentation.
 
-This project is helping me gain practical experience with:
+These improvements will be evaluated based on learning objectives, security, and AWS costs.
 
-* AWS infrastructure
-* VPC networking
-* EC2 deployment
-* Linux server administration
-* IAM
-* DNS
-* Monitoring
-* SNS
-* PostgreSQL
-* Terraform
-* Git and GitHub
-* Cloud architecture
+## Learning Outcomes
 
-## Status
+This project is intended to develop practical skills in:
 
-🚧 **Active project**
+* AWS infrastructure provisioning.
+* Terraform and Infrastructure as Code.
+* VPC networking and subnet design.
+* Linux server administration.
+* EC2 and IAM.
+* Managed PostgreSQL databases.
+* DNS and cloud networking.
+* Monitoring and alerting.
+* Infrastructure troubleshooting.
+* Git and GitHub-based project management.
+* Cloud security and cost awareness.
 
-The application and AWS infrastructure are being developed incrementally as part of my cloud engineering portfolio.
+## Project Status
+
+**Status:** Active — infrastructure development and validation in progress.
+
+The infrastructure is being developed incrementally. Components will be marked as implemented after they have been configured and verified.
 
 ## Author
 
 **Athul**
 
-BSc Computer Science
-Cloud & AWS Infrastructure Learner
+BSc Computer Science | Aspiring Cloud and Infrastructure Engineer
+
+GitHub: [athul-glitch](https://github.com/athul-glitch)
