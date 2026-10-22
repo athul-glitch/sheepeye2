@@ -22,4 +22,7 @@ output "rds_identifier" {
   description = "Identifier of the Sheepeye PostgreSQL database"
   value       = aws_db_instance.sheepeye2_postgres.identifier
 }
-
+output "sns_topic_arn" {
+  description = "ARN of the Sheepeye2 SNS notification topic"
+  value       = aws_sns_topic.sheepeye_notifications.arn
+}

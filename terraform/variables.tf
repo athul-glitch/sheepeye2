@@ -12,3 +12,8 @@ variable "db_password" {
     error_message = "The database password must be 8-40 alphanumeric characters."
   }
 }
+variable "notification_email" {
+  description = "Email address for Sheepeye2 SNS notifications"
+  type        = string
+  sensitive   = true
+}
